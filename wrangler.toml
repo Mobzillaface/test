@@ -1,0 +1,3 @@
+name = "worker"  # Replace with your Worker name
+main = "worker.js"   # Your Worker script filename
+compatibility_date = "2025-07-22"
