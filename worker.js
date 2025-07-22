@@ -1,22 +1,32 @@
-addEventListener('fetch', event => {
-  event.respondWith(handleRequest(event.request));
-});
+export default {
+  async fetch(request, env, ctx) {
+    // Handle CORS preflight requests
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+          "Access-Control-Allow-Headers": "*",
+          "Access-Control-Max-Age": "86400",
+        },
+      });
+    }
 
-async function handleRequest(request) {
-  const url = new URL(request.url);
+    // Log the request for testing purposes
+    console.log("XSS payload triggered:", new Date().toISOString());
+    console.log("Request method:", request.method);
+    console.log("Request URL:", request.url);
+    console.log("User-Agent:", request.headers.get("User-Agent"));
 
-  console.log(`[XSS Hit]`, {
-    method: request.method,
-    path: url.pathname,
-    query: url.search,
-    headers: Object.fromEntries(request.headers),
-    ip: request.headers.get('CF-Connecting-IP'),
-    userAgent: request.headers.get('User-Agent'),
-    timestamp: new Date().toISOString(),
-  });
-
-  return new Response('XSS Executed', {
-    status: 200,
-    headers: { 'Content-Type': 'text/plain' },
-  });
-}
+    // Return response with CORS headers
+    return new Response("XSS request received successfully", {
+      status: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "*",
+        "Content-Type": "text/plain",
+      },
+    });
+  },
+};
